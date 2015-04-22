@@ -1,5 +1,5 @@
 '''
-Copyright (c) 2015, Boris Babenko 
+Copyright (c) 2015, Boris Babenko
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -32,12 +32,12 @@ from collections import namedtuple
 def gblur(image, sigma):
     """
     Convenience wrapper around cv2.GaussianBlur.
-    
+
     Parameters
     ----------
     image : 2D or 3D numpy array
     sigma : parameter for gaussian kernel
-    
+
     Returns
     -------
     blurred : 2D or 3D array
@@ -81,10 +81,10 @@ _PAD_STYLE_TO_CV2_ENUM = {
 PAD_STYLE = namedtuple(
         'PAD_STYLE', _PAD_STYLE_TO_CV2_ENUM.keys())(*_PAD_STYLE_TO_CV2_ENUM.values())
 
-def pad(image, 
-        (pad_left, pad_right), 
-        (pad_top, pad_bottom), 
-        pad_style=PAD_STYLE.reflect, 
+def pad(image,
+        (pad_left, pad_right),
+        (pad_top, pad_bottom),
+        pad_style=PAD_STYLE.reflect,
         pad_constant=0):
     """
     Convenience wrapper around `cv2.copyMakeBorder`.
@@ -100,7 +100,6 @@ def pad(image,
     Returns
     -------
     """
-    pad_left, pad_right, pad_top, pad_bottom = 0, 0, 0, 0
     padded_image = cv2.copyMakeBorder(
                 image, pad_top, pad_bottom, pad_left, pad_right, pad_style, value=pad_constant)
     assert padded_image.shape[:2] == (image.shape[0] + pad_top + pad_bottom,
@@ -120,7 +119,7 @@ def crop(image, (left_x, top_y, width, height), pad_style=PAD_STYLE.reflect, pad
     (left_x, top_y, width, height) : bounding box parameters, will be cast to ints
     pad_style: one of cv2.BORDER* enums, see PAD_STYLE as a convinience wrapper for that
     pad_constant: if pad style is `constant`, fill with this value
-    
+
     Returns
     -------
     patch : 2D or 3D numpy array with specified width and height
@@ -141,8 +140,11 @@ def crop(image, (left_x, top_y, width, height), pad_style=PAD_STYLE.reflect, pad
         top_y = 0
 
     if pad_left or pad_right or pad_top or pad_bottom:
-        image = cv2.copyMakeBorder(
-                image, pad_top, pad_bottom, pad_left, pad_right, pad_style, value=pad_constant)
+        image = pad(image,
+                    (pad_left, pad_right),
+                    (pad_top, pad_bottom),
+                    pad_style,
+                    pad_constant=pad_constant)
     cropped_image = image[top_y:top_y+height, left_x:left_x+width,...]
     assert cropped_image.shape[:2] == (width, height)
     assert cropped_image.ndim == image.ndim
@@ -156,7 +158,7 @@ def gradient(image):
     Parameters
     ----------
     image : 2D or 3D image
-    
+
     Returns
     -------
     gradient_magnitude: 2D float32 numpy array, same width and height as input
@@ -175,7 +177,7 @@ def gradient(image):
 
 def resize(image, width, height, keep_aspect_ratio=True):
     """
-    
+
     Parameters
     ----------
     image : 2D or 3D image
@@ -183,7 +185,7 @@ def resize(image, width, height, keep_aspect_ratio=True):
     height : int, new height
     keep_aspect_ratio : if True, will resize image to largest possible size that fits inside
         a width x height rectangle, otherwise will distort image
-    
+
     Returns
     -------
     """
@@ -199,7 +201,7 @@ def resize(image, width, height, keep_aspect_ratio=True):
     resized_image = cv2.resize(image, (width, height))
     assert resized_image.shape[0] <= height and resized_image.shape[1] <= width
     if keep_aspect_ratio:
-        assert np.abs(float(resized_image.shape[1])/resized_image.shape[0] - 
+        assert np.abs(float(resized_image.shape[1])/resized_image.shape[0] -
                       current_aspect_ratio) < .1
     assert resized_image.shape[:2] == (height, width)
     assert resized_image.ndim == image.ndim
