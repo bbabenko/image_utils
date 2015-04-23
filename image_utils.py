@@ -146,7 +146,7 @@ def crop(image, (left_x, top_y, width, height), pad_style=PAD_STYLE.reflect, pad
                     pad_style,
                     pad_constant=pad_constant)
     cropped_image = image[top_y:top_y+height, left_x:left_x+width,...]
-    assert cropped_image.shape[:2] == (width, height)
+    assert cropped_image.shape[:2] == (height, width)
     assert cropped_image.ndim == image.ndim
     return cropped_image
 
